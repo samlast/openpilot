@@ -84,8 +84,8 @@ class CarController():
         and not self.manual_hold
         and not self.sng_cancel_acc):
 
-      	self.sng_cancel_acc = True
-      	self.sng_resume_acc = False
+        self.sng_cancel_acc = True
+        self.sng_resume_acc = False
 
       self.prev_close_distance = CS.close_distance
       self.prev_cruise_state = CS.cruise_state
