@@ -66,16 +66,17 @@ class CarController():
     # - if cruise state becomes ready after canceling hold:
     #   send 5 es_distance messages to car with cruise_resume = 1 to resume acc
 
-    # Record manual hold set while in standstill and no car in front
-    if CS.out.standstill and self.prev_cruise_state == 1 and CS.cruise_state == 3 and CS.car_follow == 0:
-      self.manual_hold = True
+    if CS.CP.carFingerprint not in PREGLOBAL_CARS:
+      # Record manual hold set while in standstill and no car in front
+      if CS.out.standstill and self.prev_cruise_state == 1 and CS.cruise_state == 3 and CS.car_follow == 0:
+        self.manual_hold = True
 
-    # Cancel manual hold when car starts moving
-    if not CS.out.standstill:
-      self.manual_hold = False
+      # Cancel manual hold when car starts moving
+      if not CS.out.standstill:
+        self.manual_hold = False
 
-    # SNG: trigger ACC cancel when in hold and close_distance increases > SNG_DISTANCE
-    if (enabled and CS.cruise_state == 3
+      # SNG: trigger ACC cancel when in hold and close_distance increases > SNG_DISTANCE
+      if (enabled and CS.cruise_state == 3
         and CS.close_distance > CarControllerParams.SNG_DISTANCE
         and CS.close_distance < 255
         and self.prev_close_distance < CS.close_distance
@@ -85,19 +86,19 @@ class CarController():
       self.sng_cancel_acc = True
       self.sng_resume_acc = False
 
-    self.prev_close_distance = CS.close_distance
-    self.prev_cruise_state = CS.cruise_state
+      self.prev_close_distance = CS.close_distance
+      self.prev_cruise_state = CS.cruise_state
 
-    # SNG: trigger ACC resume when cruise state becomes ready
-    if (self.sng_cancel_acc_done and CS.cruise_state == 2):
-      self.sng_resume_acc = True
-      self.sng_cancel_acc_done = False
+      # SNG: trigger ACC resume when cruise state becomes ready
+      if (self.sng_cancel_acc_done and CS.cruise_state == 2):
+        self.sng_resume_acc = True
+        self.sng_cancel_acc_done = False
 
-    # SNG: stop the SNG sequence on brake or gas press
-    if CS.out.brakePressed or CS.out.gasPressed:
-      self.sng_cancel_acc = False
-      self.sng_resume_acc = False
-      self.sng_cancel_acc_done = False
+      # SNG: stop the SNG sequence on brake or gas press
+      if CS.out.brakePressed or CS.out.gasPressed:
+        self.sng_cancel_acc = False
+        self.sng_resume_acc = False
+        self.sng_cancel_acc_done = False
 
     # *** alerts and pcm cancel ***
 
